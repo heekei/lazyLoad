@@ -1,54 +1,59 @@
+/**
+ * @name lazyLoad 图片懒加载
+ * @version 1.1.0
+ * @author Heekei <heekei@foxmail.com>
+ * @site http://www.heekei.cn
+ * 
+ */
+'use strict';
 (function (window, undefined) {
+    var lazyLoad = {
+        scrollDelay: 100 //滚动节流间隔
+        , watch: function (doms) {
+            doms.forEach(function (element, index) {
+                if (lazyLoad.eleInView(element)) {
+                    element.src = element.getAttribute("data-src");//显示图片
+                    doms.splice(index, 1);
+                }
+            }, this);
+        }
+        , eleInView: function (el) {
+            var top = el.offsetTop,
+                left = el.offsetLeft,
+                width = el.offsetWidth,
+                height = el.offsetHeight;
+
+            while (el.offsetParent) {
+                el = el.offsetParent;
+                top += el.offsetTop;
+                left += el.offsetLeft;
+            }
+
+            return (
+                top < (window.pageYOffset + window.innerHeight) &&
+                left < (window.pageXOffset + window.innerWidth) &&
+                (top + height) > window.pageYOffset &&
+                (left + width) > window.pageXOffset
+            );
+        }
+    };
     document.addEventListener('DOMContentLoaded', function () {
-        var lazyLoad = {};
-        lazyLoad.imgs = document.getElementsByTagName("img");
-        lazyLoad.arrLoaded = [];
-        lazyLoad.arrImgs = [];
+        lazyLoad.imgs = document.getElementsByTagName("img");//HTMLCollection
+        lazyLoad.arrImgs = [];//
         for (var len = 0; len < lazyLoad.imgs.length; len++) {
             lazyLoad.arrImgs.push(lazyLoad.imgs[len]);
         }
-        lazyLoad.watch = function (doms) {
-            var tmp = doms;
-            var arrLoadedID = [];
-            for (var x in tmp) {
-                if (isVisible(tmp[x])) {
-                    console.log(tmp);
-                    tmp[x].src = tmp[x].getAttribute("data-src");//显示图片
-                    arrLoadedID.push(x);//记录已加载的id
-                    lazyLoad.arrLoaded.push(tmp[x]);//添加进已加载数组
-                    console.log(lazyLoad.arrImgs);
-                }
-            }
-            //从arrImgs中清除已加载的图片
-            for (var i = 0; i < arrLoadedID.length; i++) {
-                lazyLoad.arrImgs.splice(arrLoadedID[i], 1)
-            }
-
-        }
         lazyLoad.watch(lazyLoad.arrImgs);
-        // window.onscroll 稀释
-        var cb = {
-            onscroll: function () {
-                lazyLoad.watch(lazyLoad.arrImgs);
-                window.removeEventListener("scroll", cb.onscroll, false);
-                setTimeout(function () {
-                    console.log("done");
-                    window.addEventListener("scroll", cb.onscroll, false);
-                }, 300);
-            }
-        };
-        window.addEventListener("scroll", cb.onscroll, false);
 
-        function isVisible(node) {
-            var SCROLLTOP = document.body.scrollTop;
-            var CLIENTHEIGHT = window.innerHeight//document.documentElement.clientHeight;
-            if (node.offsetTop < (SCROLLTOP + CLIENTHEIGHT) && (node.offsetTop + node.clientHeight) > SCROLLTOP) {
-                return true;
-            }
-            else {
-                return false;
-            }
+        // window.onscroll 节流
+        function scrollThrottle() {
+            window.removeEventListener("scroll", scrollThrottle, false);
+            setTimeout(function () {
+                window.addEventListener("scroll", scrollThrottle, false);
+            }, lazyLoad.scrollDelay);
+            lazyLoad.watch(lazyLoad.arrImgs);
         }
+        window.addEventListener("scroll", scrollThrottle, false);
         window.lazyLoad = lazyLoad;
     }, false);
 })(window)
