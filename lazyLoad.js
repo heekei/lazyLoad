@@ -1,6 +1,6 @@
 /**
  * @name lazyLoad 图片懒加载
- * @version 1.1.0
+ * @version 1.2.0
  * @author Heekei <heekei@foxmail.com>
  * @site http://www.heekei.cn
  * 
@@ -10,11 +10,14 @@
     var lazyLoad = {
         scrollDelay: 100 //滚动节流间隔
         , watch: function (doms) {
-            doms.forEach(function (element, index) {
-                if (lazyLoad.eleInView(element)) {
+            doms = doms.filter(function (element, index) {
+                if (!element._isloaded && lazyLoad.eleInView(element)) {
                     element.src = element.getAttribute("data-src");//显示图片
-                    doms.splice(index, 1);
+                    // doms.splice(index, 1);
+                    element._isloaded = true;
+                    return false;
                 }
+                return true;
             }, this);
         }
         , eleInView: function (el) {
@@ -50,8 +53,9 @@
             window.removeEventListener("scroll", scrollThrottle, false);
             setTimeout(function () {
                 window.addEventListener("scroll", scrollThrottle, false);
+                lazyLoad.watch(lazyLoad.arrImgs);
             }, lazyLoad.scrollDelay);
-            lazyLoad.watch(lazyLoad.arrImgs);
+            // lazyLoad.watch(lazyLoad.arrImgs);
         }
         window.addEventListener("scroll", scrollThrottle, false);
         window.lazyLoad = lazyLoad;
