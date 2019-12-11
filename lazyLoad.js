@@ -1,6 +1,6 @@
 /**
  * @name lazyLoad 图片懒加载
- * @version 1.2.0
+ * @version 1.2.1
  * @author Heekei <heekei@foxmail.com>
  * @site http://www.heekei.cn
  * 
@@ -40,6 +40,7 @@
             );
         }
     };
+    var timer = null;
     document.addEventListener('DOMContentLoaded', function () {
         lazyLoad.imgs = document.getElementsByTagName("img");//HTMLCollection
         lazyLoad.arrImgs = [];//
@@ -47,19 +48,25 @@
             lazyLoad.arrImgs.push(lazyLoad.imgs[len]);
         }
         lazyLoad.watch(lazyLoad.arrImgs);
-
+        timer = setInterval(function () {
+            lazyLoad.watch(lazyLoad.arrImgs);
+        }, 500);
         // window.onscroll 节流
         function scrollThrottle() {
             window.removeEventListener("scroll", scrollThrottle, false);
+            window.removeEventListener("resize", scrollThrottle, false);
+            clearInterval(timer);
             setTimeout(function () {
                 window.addEventListener("scroll", scrollThrottle, false);
+                window.addEventListener("resize", scrollThrottle, false);
                 lazyLoad.watch(lazyLoad.arrImgs);
+                timer = setInterval(function () {
+                    lazyLoad.watch(lazyLoad.arrImgs);
+                }, 500);
             }, lazyLoad.scrollDelay);
-            // lazyLoad.watch(lazyLoad.arrImgs);
         }
         window.addEventListener("scroll", scrollThrottle, false);
+        window.addEventListener("resize", scrollThrottle, false);
         window.lazyLoad = lazyLoad;
     }, false);
 })(window)
-
-
