@@ -42,8 +42,8 @@
     };
     var timer = null;
     document.addEventListener('DOMContentLoaded', function () {
-        lazyLoad.imgs = document.getElementsByTagName("img");//HTMLCollection
-        lazyLoad.arrImgs = [];//
+        lazyLoad.imgs = document.querySelectorAll('img[data-src]'); //document.getElementsByTagName("img");//HTMLCollection
+        lazyLoad.arrImgs = [];
         for (var len = 0; len < lazyLoad.imgs.length; len++) {
             lazyLoad.arrImgs.push(lazyLoad.imgs[len]);
         }
