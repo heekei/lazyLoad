@@ -1,13 +1,13 @@
 /**
  * @name lazyLoad 图片懒加载
- * @version 1.2.1
+ * @version 1.2.2
  * @author Heekei <heekei@foxmail.com>
- * @site http://www.heekei.cn
- * 
  */
 'use strict';
-(function (window, undefined) {
+(function () {
     var lazyLoad = {
+        imgs: [],
+        arrImgs: [],
         scrollDelay: 100 //滚动节流间隔
         , watch: function (doms) {
             doms = doms.filter(function (element, index) {
@@ -20,7 +20,15 @@
                 return true;
             }, this);
         }
-        , eleInView: function (el) {
+        , eleInView: function (elem) {
+            var bounding = elem.getBoundingClientRect();
+            return (
+                bounding.top >= 0 &&
+                bounding.left >= 0 &&
+                bounding.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
+                bounding.right <= (window.innerWidth || document.documentElement.clientWidth)
+            );
+        }/* function (el) {
             var top = el.offsetTop,
                 left = el.offsetLeft,
                 width = el.offsetWidth,
@@ -33,17 +41,16 @@
             }
 
             return (
-                top < (window.pageYOffset + window.innerHeight) &&
-                left < (window.pageXOffset + window.innerWidth) &&
-                (top + height) > window.pageYOffset &&
-                (left + width) > window.pageXOffset
+                top <= (window.pageYOffset + window.innerHeight) &&
+                left <= (window.pageXOffset + window.innerWidth) &&
+                (top + height) >= window.pageYOffset &&
+                (left + width) >= window.pageXOffset
             );
-        }
+        } */
     };
     var timer = null;
     document.addEventListener('DOMContentLoaded', function () {
         lazyLoad.imgs = document.querySelectorAll('img[data-src]'); //document.getElementsByTagName("img");//HTMLCollection
-        lazyLoad.arrImgs = [];
         for (var len = 0; len < lazyLoad.imgs.length; len++) {
             lazyLoad.arrImgs.push(lazyLoad.imgs[len]);
         }
@@ -51,7 +58,6 @@
         timer = setInterval(function () {
             lazyLoad.watch(lazyLoad.arrImgs);
         }, 500);
-        // window.onscroll 节流
         function scrollThrottle() {
             window.removeEventListener("scroll", scrollThrottle, false);
             window.removeEventListener("resize", scrollThrottle, false);
@@ -67,6 +73,6 @@
         }
         window.addEventListener("scroll", scrollThrottle, false);
         window.addEventListener("resize", scrollThrottle, false);
-        window.lazyLoad = lazyLoad;
+        // window.lazyLoad = lazyLoad;
     }, false);
-})(window)
+})()
