@@ -1,6 +1,6 @@
 /**
  * @name lazyLoad 图片懒加载
- * @version 1.2.2
+ * @version 1.2.3
  * @author Heekei <heekei@foxmail.com>
  */
 'use strict';
