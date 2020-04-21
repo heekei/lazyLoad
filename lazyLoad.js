@@ -31,7 +31,9 @@
     var scrollTimer = null;
     document.addEventListener('DOMContentLoaded', function () {
         lazyLoad.imgs = document.querySelectorAll('img[data-src]'); //document.getElementsByTagName("img");//HTMLCollection
-        lazyLoad.watch(lazyLoad.imgs);
+        setTimeout(function(){
+          lazyLoad.watch(lazyLoad.imgs);
+        }, 0);
         function scrollThrottle() {
             window.removeEventListener("scroll", scrollThrottle, false);
             window.removeEventListener("resize", scrollThrottle, false);
